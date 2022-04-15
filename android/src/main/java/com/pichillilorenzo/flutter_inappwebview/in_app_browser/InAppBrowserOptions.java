@@ -92,7 +92,7 @@ public class InAppBrowserOptions implements Options<InAppBrowserActivity> {
   public Map<String, Object> getRealOptions(InAppBrowserActivity inAppBrowserActivity) {
     Map<String, Object> realOptions = toMap();
     realOptions.put("hideToolbarTop", !inAppBrowserActivity.actionBar.isShowing());
-    realOptions.put("hideUrlBar", !inAppBrowserActivity.menu.findItem(R.id.menu_search).isVisible());
+    realOptions.put("hideUrlBar", true);
     realOptions.put("hideProgressBar", inAppBrowserActivity.progressBar.getMax() == 0);
     return realOptions;
   }

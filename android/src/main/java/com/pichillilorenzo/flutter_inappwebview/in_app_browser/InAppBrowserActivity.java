@@ -119,7 +119,7 @@ public class InAppBrowserActivity extends AppCompatActivity implements InAppBrow
     webView.userContentController.addUserOnlyScripts(userScripts);
 
     actionBar = getSupportActionBar();
-
+    actionBar.setDisplayHomeAsUpEnabled(true);
     prepareView();
 
     if (windowId != -1) {
@@ -156,7 +156,15 @@ public class InAppBrowserActivity extends AppCompatActivity implements InAppBrow
 
     onBrowserCreated();
   }
-
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    switch (item.getItemId()) {
+      case android.R.id.home:// 点击返回图标事件
+        this.finish();
+      default:
+        return super.onOptionsItemSelected(item);
+    }
+  }
   public void onBrowserCreated() {
     Map<String, Object> obj = new HashMap<>();
     channel.invokeMethod("onBrowserCreated", obj);
@@ -191,65 +199,7 @@ public class InAppBrowserActivity extends AppCompatActivity implements InAppBrow
 
   }
 
-  @Override
-  public boolean onCreateOptionsMenu(Menu m) {
-    menu = m;
 
-    MenuInflater inflater = getMenuInflater();
-    // Inflate menu to add items to action bar if it is present.
-    inflater.inflate(R.menu.menu_main, menu);
-
-    searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
-    searchView.setFocusable(true);
-
-    if (options.hideUrlBar)
-      menu.findItem(R.id.menu_search).setVisible(false);
-
-    searchView.setQuery(webView.getUrl(), false);
-
-    if (options.toolbarTopFixedTitle == null || options.toolbarTopFixedTitle.isEmpty())
-      actionBar.setTitle(webView.getTitle());
-
-    searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-      @Override
-      public boolean onQueryTextSubmit(String query) {
-        if (!query.isEmpty()) {
-          webView.loadUrl(query);
-          searchView.setQuery("", false);
-          searchView.setIconified(true);
-          return true;
-        }
-        return false;
-      }
-
-      @Override
-      public boolean onQueryTextChange(String newText) {
-        return false;
-      }
-
-    });
-
-    searchView.setOnCloseListener(new SearchView.OnCloseListener() {
-      @Override
-      public boolean onClose() {
-        if (searchView.getQuery().toString().isEmpty())
-          searchView.setQuery(webView.getUrl(), false);
-        return false;
-      }
-    });
-
-    searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
-      @Override
-      public void onFocusChange(View view, boolean b) {
-        if (!b) {
-          searchView.setQuery("", false);
-          searchView.setIconified(true);
-        }
-      }
-    });
-
-    return true;
-  }
 
   public boolean onKeyDown(int keyCode, KeyEvent event) {
     if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -389,10 +339,6 @@ public class InAppBrowserActivity extends AppCompatActivity implements InAppBrow
       actionBar.setTitle(newOptions.toolbarTopFixedTitle);
 
     if (newOptionsMap.get("hideUrlBar") != null && options.hideUrlBar != newOptions.hideUrlBar) {
-      if (newOptions.hideUrlBar)
-        menu.findItem(R.id.menu_search).setVisible(false);
-      else
-        menu.findItem(R.id.menu_search).setVisible(true);
     }
 
     options = newOptions;
